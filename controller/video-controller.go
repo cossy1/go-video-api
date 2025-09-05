@@ -16,16 +16,11 @@ type VideoController interface {
 	FindAll() []entity.Video
 }
 
-// var validate *validator.Validate
-
 type videoController struct {
 	service service.VideoService
 }
 
 func NewVideoController(service service.VideoService) VideoController {
-	// validate = validator.New()
-	// validate.RegisterValidation("is-cool", validators.ValidateCoolTitle)
-
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("is-cool", validators.ValidateCoolTitle)
 	}

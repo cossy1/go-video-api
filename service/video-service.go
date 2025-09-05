@@ -20,18 +20,6 @@ func NewVideoService() VideoService {
 }
 
 func (s *videoService) SaveVideo(video entity.Video) entity.Video {
-	if video.Title == "" {
-		return entity.Video{}
-	}
-
-	if video.Description == "" {
-		return entity.Video{}
-	}
-
-	if video.URL == "" {
-		return entity.Video{}
-	}
-
 	s.videos = append(s.videos, video)
 
 	return video
