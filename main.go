@@ -65,6 +65,18 @@ func main() {
 		apiRoutes.GET("/user/:id", func(ctx *gin.Context) {
 			userController.GetUser(ctx)
 		})
+
+		apiRoutes.GET("/users", func(ctx *gin.Context) {
+			userController.GetAllUsers(ctx)
+		})
+
+		apiRoutes.PUT("/user/:id", func(ctx *gin.Context) {
+			userController.UpdateUser(ctx)
+		})
+
+		apiRoutes.DELETE("/user/:id", func(ctx *gin.Context) {
+			userController.DeleteUser(ctx)
+		})
 	}
 
 	server.Run(":8080")
