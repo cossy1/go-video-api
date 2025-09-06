@@ -7,7 +7,8 @@ type RegisterRequest struct {
 	Email     string `json:"email" binding:"required,email"`
 	Password  string `json:"password" binding:"required,min=6"`
 	ID        uint64 `json:"id"`
-	CreatedAt int    `json:"createdAt"`
+	CreatedAt UnixTime    `json:"createdAt"`
+	UpdatedAt UnixTime    `json:"updatedAt"`
 }
 
 type LoginRequest struct {

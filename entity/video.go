@@ -6,6 +6,8 @@ type Video struct {
 	URL         string `json:"url" binding:"required,url"`
 	Author      User   `json:"author" binding:"required" gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
-	ID     uint64 `json:"id" gorm:"primaryKey;autoIncrement"`
-	UserID uint64 `json:"userId" binding:"required"`
+	ID        uint64 `json:"id" gorm:"primaryKey;autoIncrement"`
+	UserID    uint64 `json:"userId" binding:"required"`
+	UpdatedAt int    `json:"updatedAt"`
+	CreatedAt int    `json:"createdAt"`
 }
