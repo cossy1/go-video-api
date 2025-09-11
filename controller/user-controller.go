@@ -4,7 +4,6 @@ import (
 	"go-api/entity"
 	"go-api/service"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,17 +25,11 @@ func NewUserController(service service.UserService) UserController {
 
 func (uc *userController) GetUser(ctx *gin.Context) error {
 
-	id := ctx.Param("id")
+	userId := ctx.Param("id")
 
-	if id == "" {
+	if userId == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User Id is required"})
 		return nil
-	}
-	// Convert id string to uint64
-	userId, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return err
 	}
 
 	data, err := uc.service.GetUser(userId)

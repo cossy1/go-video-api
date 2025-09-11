@@ -9,7 +9,7 @@ import (
 )
 
 type UserService interface {
-	GetUser(id uint64) (entity.User, error)
+	GetUser(id string) (entity.User, error)
 	UpdateUser(id string, req entity.UpdateUserRequest) (entity.User, error)
 	GetAllUsers() ([]entity.UserResponse, error)
 	DeleteUser(id string) error
@@ -25,10 +25,10 @@ func NewUserService(db *gorm.DB) UserService {
 	}
 }
 
-func (ctx userService) GetUser(id uint64) (entity.User, error) {
+func (ctx userService) GetUser(id string) (entity.User, error) {
 
 	var user entity.User
-	err := ctx.db.Where("ID = ?", id).First(&user).Error
+	err := ctx.db.Where("id = ?", id).First(&user).Error
 
 	return user, err
 }
