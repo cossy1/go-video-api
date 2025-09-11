@@ -57,13 +57,7 @@ func (s *videoService) GetAll(userId string) ([]entity.Video, error) {
 func (s *videoService) GetVideo(videoId string) (entity.Video, error) {
 	var video entity.Video
 
-	err := s.db.Where("id = ?", videoId).Error
-
-	if err != nil {
-		return entity.Video{}, err
-	}
-
-	if err := s.db.Preload("Author").First(&video).Error; err != nil {
+	if err := s.db.Where("id = ?", videoId).Preload("Author").First(&video).Error; err != nil {
 		return entity.Video{}, err
 	}
 
