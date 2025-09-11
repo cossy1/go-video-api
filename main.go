@@ -24,6 +24,8 @@ func init() {
 func main() {
 	server := gin.New()
 
+	server.SetTrustedProxies([]string{})
+
 	DB = database.ConnectDatabase()
 
 	if DB == nil {
@@ -57,6 +59,10 @@ func main() {
 		})
 		apiRoutes.POST("/videos", func(ctx *gin.Context) {
 			videoController.SaveVideo(ctx)
+		})
+
+		apiRoutes.DELETE("/videos/:id", func(ctx *gin.Context) {
+			videoController.DeleteVideo(ctx)
 		})
 		apiRoutes.GET("/videos/:id", func(ctx *gin.Context) {
 			videoController.GetVideo(ctx)

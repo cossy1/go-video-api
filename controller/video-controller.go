@@ -14,6 +14,7 @@ type VideoController interface {
 	GetAll(ctx *gin.Context) error
 	GetVideo(ctx *gin.Context) error
 	UpdateVideo(ctx *gin.Context) error
+	DeleteVideo(ctx *gin.Context) error
 }
 
 type videoController struct {
@@ -150,6 +151,26 @@ func (vc *videoController) UpdateVideo(ctx *gin.Context) error {
 	response := entity.ToVideoResponse(data)
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Video updated successfully!", "data": response})
+
+	return nil
+}
+
+func (vc *videoController) DeleteVideo(ctx *gin.Context) error {
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Id is required"})
+		return nil
+	}
+
+	err := vc.service.DeleteVideo(id)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Video deleted successfully!"})
 
 	return nil
 }
