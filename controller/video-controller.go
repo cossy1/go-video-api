@@ -75,6 +75,7 @@ func (vc *videoController) SaveVideo(ctx *gin.Context) error {
 	}
 
 	parsedUUID, err := uuid.Parse(userId.(string))
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return err

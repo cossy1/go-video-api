@@ -11,7 +11,7 @@ import (
 
 type VideoService interface {
 	SaveVideo(entity.CreateVideoRequest) (entity.Video, error)
-	GetAll(id string) ([]entity.Video, error)
+	GetAll(userId string) ([]entity.Video, error)
 	GetVideo(videoId string) (entity.Video, error)
 	UpdateVideo(videoId string, req entity.UpdateVideoRequest) (entity.Video, error)
 }
@@ -44,20 +44,10 @@ func (s *videoService) SaveVideo(request entity.CreateVideoRequest) (entity.Vide
 	return video, err
 }
 
-func (s *videoService) GetAll(id string) ([]entity.Video, error) {
+func (s *videoService) GetAll(userId string) ([]entity.Video, error) {
 	var videos []entity.Video
 
-	err := s.db.Where("id = ?", id).Error
-
-	if err != nil {
-		return []entity.Video{}, err
-	}
-
-	if err := s.db.Find(&videos).Where("userId = ?", id).Error; err != nil {
-		return []entity.Video{}, err
-	}
-
-	if err := s.db.Preload("Author").First(&videos).Error; err != nil {
+	if err := s.db.Where("user_id = ?", userId).Preload("Author").Find(&videos).Error; err != nil {
 		return []entity.Video{}, err
 	}
 
