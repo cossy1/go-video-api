@@ -10,9 +10,9 @@ import (
 
 type UserService interface {
 	GetUser(id uint64) (entity.User, error)
-	UpdateUser(id uint64, req entity.UpdateUserRequest) (entity.User, error)
+	UpdateUser(id string, req entity.UpdateUserRequest) (entity.User, error)
 	GetAllUsers() ([]entity.UserResponse, error)
-	DeleteUser(id uint64) error
+	DeleteUser(id string) error
 }
 
 type userService struct {
@@ -54,12 +54,12 @@ func (ctx userService) GetAllUsers() ([]entity.UserResponse, error) {
 	return response, err
 }
 
-func (ctx userService) UpdateUser(id uint64, req entity.UpdateUserRequest) (entity.User, error) {
+func (ctx userService) UpdateUser(id string, req entity.UpdateUserRequest) (entity.User, error) {
 
 	var user entity.User
-	err := ctx.db.First(&user, id).Error
+	err := ctx.db.First(&user, "id = ?", id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return entity.User{}, fmt.Errorf("user with ID %d not found", id)
+		return entity.User{}, fmt.Errorf("user with ID %s not found", id)
 	}
 
 	if err != nil {
@@ -73,9 +73,6 @@ func (ctx userService) UpdateUser(id uint64, req entity.UpdateUserRequest) (enti
 	if req.LastName != "" {
 		update["last_name"] = req.LastName
 	}
-	if req.Email != "" {
-		update["email"] = req.Email
-	}
 	if req.Age > 0 && req.Age <= 120 {
 		update["age"] = req.Age
 	}
@@ -86,18 +83,15 @@ func (ctx userService) UpdateUser(id uint64, req entity.UpdateUserRequest) (enti
 
 	err = ctx.db.Model(&user).Updates(update).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return entity.User{}, fmt.Errorf("email %s already in use", req.Email)
-		}
 		return entity.User{}, fmt.Errorf("failed to update user: %v", err)
 	}
 
 	return user, err
 }
 
-func (ctx userService) DeleteUser(id uint64) error {
+func (ctx userService) DeleteUser(id string) error {
 
-	result := ctx.db.Delete(&entity.User{}, id)
+	result := ctx.db.Delete(&entity.User{}, "id = ?", id)
 
 	if result.Error != nil {
 		return result.Error

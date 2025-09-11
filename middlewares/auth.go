@@ -42,8 +42,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userID := uint64(claims["userId"].(float64))
-		c.Set("userID", userID)
+		userID := claims["userId"].(string)
+		c.Set("userId", userID)
 		c.Next()
 	}
 }

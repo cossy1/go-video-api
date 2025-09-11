@@ -3,17 +3,17 @@ package controller
 import (
 	"go-api/entity"
 	"go-api/service"
-	"go-api/validators"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type VideoController interface {
 	SaveVideo(ctx *gin.Context) error
-	FindAll() []entity.Video
+	GetAll(ctx *gin.Context) error
+	GetVideo(ctx *gin.Context) error
+	UpdateVideo(ctx *gin.Context) error
 }
 
 type videoController struct {
@@ -21,19 +21,44 @@ type videoController struct {
 }
 
 func NewVideoController(service service.VideoService) VideoController {
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("is-cool", validators.ValidateCoolTitle)
-	}
+	// if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+	// 	v.RegisterValidation("is-cool", validators.ValidateCoolTitle)
+	// }
 
 	return &videoController{service: service}
 }
 
-func (vc *videoController) FindAll() []entity.Video {
-	return vc.service.FindAll()
+func (vc *videoController) GetAll(ctx *gin.Context) error {
+
+	id, exists := ctx.Get("userId")
+
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized"})
+		return nil
+	}
+
+	userId := id.(string)
+
+	data, err := vc.service.GetAll(userId)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return err
+	}
+
+	var response []entity.VideoResponse
+	for _, u := range data {
+		response = append(response, *entity.ToVideoResponse(u))
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Videos fetched successfully!", "data": response})
+
+	return nil
 }
 
 func (vc *videoController) SaveVideo(ctx *gin.Context) error {
-	var video entity.Video
+	var video entity.CreateVideoRequest
 
 	err := ctx.ShouldBindJSON(&video)
 
@@ -42,18 +67,88 @@ func (vc *videoController) SaveVideo(ctx *gin.Context) error {
 		return err
 	}
 
-	// err = validate.Struct(video)
+	userId, exists := ctx.Get("userId")
 
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return nil
+	}
 
-	// 	return err
-	// }
+	parsedUUID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return err
+	}
+	video.UserID = parsedUUID
 
-	savedVideo := vc.service.SaveVideo(video)
+	savedVideo, err := vc.service.SaveVideo(video)
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Video saved successfully", "data": savedVideo})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return err
+	}
+
+	response := entity.ToVideoResponse(savedVideo)
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Video saved successfully", "data": response})
 
 	return nil
 
+}
+
+func (vc *videoController) GetVideo(ctx *gin.Context) error {
+
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Id is required"})
+		return nil
+	}
+
+	data, err := vc.service.GetVideo(id)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return err
+	}
+
+	response := entity.ToVideoResponse(data)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Video fetched successfully!", "data": response})
+
+	return nil
+}
+
+func (vc *videoController) UpdateVideo(ctx *gin.Context) error {
+	var req entity.UpdateVideoRequest
+
+	err := ctx.ShouldBindJSON(&req)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
+
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Id is required"})
+		return nil
+	}
+
+	data, err := vc.service.UpdateVideo(id, req)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return err
+	}
+
+	response := entity.ToVideoResponse(data)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Video updated successfully!", "data": response})
+
+	return nil
 }

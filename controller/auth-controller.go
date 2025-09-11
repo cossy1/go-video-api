@@ -42,6 +42,7 @@ func (ac *authController) Register(ctx *gin.Context) error {
 	request.Password = string(hashedPassword)
 
 	data, err := ac.service.Register(request)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 

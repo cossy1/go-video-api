@@ -1,13 +1,68 @@
 package entity
 
-type Video struct {
-	Title       string `json:"title" binding:"min=2,max=20,required,is-cool"`
-	Description string `json:"description" binding:"required,max=20"`
-	URL         string `json:"url" binding:"required,url"`
-	Author      User   `json:"author" binding:"required" gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+import (
+	"time"
 
-	ID        uint64 `json:"id" gorm:"primaryKey;autoIncrement"`
-	UserID    uint64 `json:"userId" binding:"required"`
-	UpdatedAt int    `json:"updatedAt"`
-	CreatedAt int    `json:"createdAt"`
+	"github.com/google/uuid"
+)
+
+type Video struct {
+	Title       string    `json:"title" binding:"min=2,max=20,required"`
+	Description string    `json:"description" binding:"required,max=200"`
+	URL         string    `json:"url" binding:"required,url"`
+	Author      User      `json:"author" gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ID          uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+
+	UserID    uuid.UUID `json:"userId" binding:"required"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type CreateVideoRequest struct {
+	Title       string `json:"title" binding:"min=2,max=20,required"`
+	Description string `json:"description" binding:"required,max=200"`
+	URL         string `json:"url" binding:"required,url"`
+
+	UserID    uuid.UUID `json:"userId" binding:"required"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type UpdateVideoRequest struct {
+	Title       string `json:"title" binding:"min=2,max=20,required"`
+	Description string `json:"description" binding:"required,max=200"`
+	URL         string `json:"url" binding:"required,url"`
+
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type VideoResponse struct {
+	Title       string         `json:"title"`
+	Description string         `json:"description"`
+	URL         string         `json:"url"`
+	Author      AuthorResponse `json:"author"`
+	ID          uuid.UUID      `json:"id"`
+
+	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+func ToVideoResponse(video Video) *VideoResponse {
+	return &VideoResponse{
+		Title:       video.Title,
+		Description: video.Description,
+		URL:         video.URL,
+		Author: AuthorResponse{
+			FirstName: video.Author.FirstName,
+			LastName:  video.Author.LastName,
+			Age:       video.Author.Age,
+			Email:     video.Author.Email,
+			ID:        video.Author.ID,
+			CreatedAt: video.Author.CreatedAt,
+			UpdatedAt: video.Author.UpdatedAt,
+		},
+		ID:        video.ID,
+		UpdatedAt: video.UpdatedAt,
+		CreatedAt: video.CreatedAt,
+	}
 }
