@@ -81,14 +81,7 @@ func (uc *userController) UpdateUser(ctx *gin.Context) error {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return err
 	}
-	idx := ctx.Param("id")
-
-	id, err := strconv.ParseUint(idx, 10, 64)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return err
-	}
+	id := ctx.Param("id")
 
 	data, err := uc.service.UpdateUser(id, body)
 	if err != nil {
@@ -114,19 +107,19 @@ func (uc *userController) UpdateUser(ctx *gin.Context) error {
 
 func (uc *userController) DeleteUser(ctx *gin.Context) error {
 
-	id := ctx.Param("id")
+	userId := ctx.Param("id")
 
-	if id == "" {
+	if userId == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User Id is required"})
 		return nil
 	}
 
-	userId, err := strconv.ParseUint(id, 10, 64)
+	// userId, err := strconv.ParseUint(id, 10, 64)
 
-	if err != nil {
+	// if err != nil {
 
-		return err
-	}
+	// 	return err
+	// }
 
 	if err := uc.service.DeleteUser(userId); err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

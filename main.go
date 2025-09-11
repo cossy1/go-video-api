@@ -6,7 +6,6 @@ import (
 	"go-api/middlewares"
 	"go-api/service"
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -32,7 +31,7 @@ func main() {
 	}
 
 	var (
-		videoService    service.VideoService       = service.NewVideoService()
+		videoService    service.VideoService       = service.NewVideoService(DB)
 		authService     service.AuthService        = service.NewAuthService(DB)
 		userService     service.UserService        = service.NewUserService(DB)
 		videoController controller.VideoController = controller.NewVideoController(videoService)
@@ -54,26 +53,26 @@ func main() {
 	apiRoutes := server.Group("/api", middlewares.AuthMiddleware())
 	{
 		apiRoutes.GET("/videos", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, videoController.FindAll())
-
+			videoController.GetAll(ctx)
 		})
-
 		apiRoutes.POST("/videos", func(ctx *gin.Context) {
 			videoController.SaveVideo(ctx)
 		})
-
+		apiRoutes.GET("/videos/:id", func(ctx *gin.Context) {
+			videoController.GetVideo(ctx)
+		})
+		apiRoutes.PUT("/videos/:id", func(ctx *gin.Context) {
+			videoController.UpdateVideo(ctx)
+		})
 		apiRoutes.GET("/user/:id", func(ctx *gin.Context) {
 			userController.GetUser(ctx)
 		})
-
 		apiRoutes.GET("/users", func(ctx *gin.Context) {
 			userController.GetAllUsers(ctx)
 		})
-
 		apiRoutes.PUT("/user/:id", func(ctx *gin.Context) {
 			userController.UpdateUser(ctx)
 		})
-
 		apiRoutes.DELETE("/user/:id", func(ctx *gin.Context) {
 			userController.DeleteUser(ctx)
 		})

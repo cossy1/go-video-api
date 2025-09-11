@@ -3,11 +3,12 @@ package service
 import (
 	"go-api/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type AuthService interface {
-	Register(user entity.RegisterRequest) (entity.RegisterRequest, error)
+	Register(user entity.RegisterRequest) (entity.User, error)
 	Login(email entity.LoginRequest) (entity.User, error)
 }
 
@@ -21,8 +22,8 @@ func NewAuthService(db *gorm.DB) AuthService {
 	}
 }
 
-func (ctx authService) Register(user entity.RegisterRequest) (entity.RegisterRequest, error) {
-	var userEntity entity.User = entity.User{
+func (ctx authService) Register(user entity.RegisterRequest) (entity.User, error) {
+	userEntity := entity.User{
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Age:       user.Age,
@@ -31,7 +32,7 @@ func (ctx authService) Register(user entity.RegisterRequest) (entity.RegisterReq
 	}
 	err := ctx.db.Create(&userEntity).Error
 
-	return user, err
+	return userEntity, err
 }
 
 func (ctx authService) Login(request entity.LoginRequest) (entity.User, error) {
@@ -40,4 +41,8 @@ func (ctx authService) Login(request entity.LoginRequest) (entity.User, error) {
 	err := ctx.db.Where("email = ?", request.Email).First(&user).Error
 
 	return user, err
+}
+
+func GenerateUUID() uuid.UUID {
+	return uuid.New()
 }

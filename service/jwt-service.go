@@ -5,12 +5,13 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 var JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 // GenerateToken creates a JWT for a given user ID
-func GenerateToken(userID uint64) (string, error) {
+func GenerateToken(userID uuid.UUID) (string, error) {
 	claims := jwt.MapClaims{
 		"userId": userID,
 		"exp":    time.Now().Add(time.Hour * 24).Unix(), // Token expires in 7 days
