@@ -14,6 +14,7 @@ type VideoService interface {
 	GetAll(userId string) ([]entity.Video, error)
 	GetVideo(videoId string) (entity.Video, error)
 	UpdateVideo(videoId string, req entity.UpdateVideoRequest) (entity.Video, error)
+	DeleteVideo(videoId string) error
 }
 
 type videoService struct {
@@ -105,4 +106,19 @@ func (s *videoService) UpdateVideo(videoId string, req entity.UpdateVideoRequest
 	}
 
 	return video, nil
+}
+
+func (s *videoService) DeleteVideo(videoId string) error {
+
+	result := s.db.Where("id =?", videoId).Delete(&entity.Video{}, "id = ?", videoId)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("video with Id %s is not found", videoId)
+	}
+
+	return nil
 }
