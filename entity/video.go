@@ -23,7 +23,7 @@ type CreateVideoRequest struct {
 	Description string `json:"description" binding:"required,max=200"`
 	URL         string `json:"url" binding:"required,url"`
 
-	UserID    uuid.UUID `json:"userId" binding:"required"`
+	UserID    uuid.UUID `json:"userId"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	CreatedAt time.Time `json:"createdAt"`
 }
