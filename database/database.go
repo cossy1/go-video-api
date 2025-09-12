@@ -1,8 +1,8 @@
 package database
 
 import (
-	"fmt"
 	"go-api/entity"
+	"log"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -12,8 +12,11 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() *gorm.DB {
-	password := os.Getenv("DB_PASSWORD")
-	dsn := fmt.Sprintf("host=localhost user=postgres password=%s dbname=go-video-api port=5432 sslmode=disable TimeZone=Asia/Shanghai", password)
+	dsn := os.Getenv("DATABASE_URL")
+
+	if dsn == "" {
+		log.Fatal("Database url is not set")
+	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 

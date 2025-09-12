@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"go-api/controller"
 	"go-api/database"
 	"go-api/middlewares"
@@ -21,8 +20,6 @@ func init() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	fmt.Println("ENV:::", os.Getenv("GIN_MODE"))
 }
 
 func main() {
