@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"go-api/controller"
 	"go-api/database"
 	"go-api/middlewares"
 	"go-api/service"
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -19,6 +21,8 @@ func init() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	fmt.Println("ENV:::", os.Getenv("GIN_MODE"))
 }
 
 func main() {
@@ -60,7 +64,6 @@ func main() {
 		apiRoutes.POST("/videos", func(ctx *gin.Context) {
 			videoController.SaveVideo(ctx)
 		})
-
 		apiRoutes.DELETE("/videos/:id", func(ctx *gin.Context) {
 			videoController.DeleteVideo(ctx)
 		})
@@ -84,5 +87,11 @@ func main() {
 		})
 	}
 
-	server.Run(":8080")
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	server.Run(":" + port)
 }
