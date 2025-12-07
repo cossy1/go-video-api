@@ -24,7 +24,13 @@ func ConnectDatabase() *gorm.DB {
 		panic("Failed to connect to database!")
 	}
 
-	db.AutoMigrate(&entity.User{}, &entity.Video{})
+	err = db.AutoMigrate(&entity.User{}, &entity.Video{})
+
+	if err != nil {
+		log.Fatalf("❌ MIGRATION FAILED: %v\n", err)
+	} else {
+		log.Println("✅ MIGRATION SUCCESS")
+	}
 
 	DB = db
 	return DB
