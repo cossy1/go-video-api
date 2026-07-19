@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	"go-api/entity"
+	"go-video-api/entity"
 	"time"
 
 	"gorm.io/gorm"
@@ -16,7 +16,6 @@ type VideoService interface {
 	UpdateVideo(videoId string, req entity.UpdateVideoRequest) (entity.Video, error)
 	DeleteVideo(videoId string) error
 }
-
 type videoService struct {
 	db *gorm.DB
 }
