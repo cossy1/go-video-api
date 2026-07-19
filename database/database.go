@@ -1,7 +1,7 @@
 package database
 
 import (
-	"go-api/entity"
+	"go-video-api/entity"
 	"log"
 	"os"
 

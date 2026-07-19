@@ -1,10 +1,10 @@
 package main
 
 import (
-	"go-api/controller"
-	"go-api/database"
-	"go-api/middlewares"
-	"go-api/service"
+	"go-video-api/controller"
+	"go-video-api/database"
+	"go-video-api/middlewares"
+	"go-video-api/service"
 	"log"
 	"os"
 
