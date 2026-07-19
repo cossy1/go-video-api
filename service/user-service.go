@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	"go-api/entity"
+	"go-video-api/entity"
 
 	"gorm.io/gorm"
 )
