@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"go-api/entity"
-	"go-api/service"
+	"go-video-api/entity"
+	"go-video-api/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

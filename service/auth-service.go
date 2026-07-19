@@ -1,7 +1,7 @@
 package service
 
 import (
-	"go-api/entity"
+	"go-video-api/entity"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
