@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"go-api/service"
+	"go-video-api/service"
 	"net/http"
 	"strings"
 
@@ -42,8 +42,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userID := claims["userId"].(string)
-		c.Set("userId", userID)
+		userId := claims["userId"].(string)
+		email := claims["email"].(string)
+		c.Set("userId", userId)
+		c.Set("email", email)
 		c.Next()
 	}
 }
